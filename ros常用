@@ -1,0 +1,85 @@
+. ~/rosproject/devel/setup.bash
+
+######## publisher ########
+mkdir -p ~/rosproject/src
+cd ~/rosproject/src
+catkin_init_workspace
+cd ..
+catkin_make
+
+source devel/setup.bash
+echo $ROS_PACKAGE_PATH
+
+cd ~/rosproject/src
+catkin_create_pkg test1 std_msgs roscpp rospy
+cd ..
+catkin_make
+source devel/setup.bash
+
+cd test1
+mkdir msg
+gedit ***.msg
+
+#~/rosproject/devel/include/test1/gps.h
+
+Cmakelist:
+find_package(catkin REQUIRED COMPONENTS
+  message_generation
+  roscpp
+  rospy
+  std_msgs
+)
+
+ add_message_files(
+   FILES
+   gps.msg
+#  Message2.msg
+ )
+
+ generate_messages(
+   DEPENDENCIES
+   std_msgs
+ )
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES test1
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime
+#  DEPENDS system_lib
+)
+
+include_directories(
+  include
+  ${catkin_INCLUDE_DIRS}
+)
+
+add_executable(talker src/talker.cpp)
+add_dependencies(talker test1_generate_messages_cpp)
+target_link_libraries(talker ${catkin_LIBRARIES})
+
+add_executable(listener src/listener.cpp)
+add_dependencies(listener test1_generate_messages_cpp)
+target_link_libraries(listener ${catkin_LIBRARIES})
+
+package.xml
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>message_runtime</exec_depend>
+
+
+######## service ########
+
+
+
+python库:catkin_ws/devel/lib/python2.7/dist-packages/packagename/...
+直接make即可得到
+chmod +x pytaker.py
+
+
+

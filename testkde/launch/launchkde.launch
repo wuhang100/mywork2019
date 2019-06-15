@@ -1,0 +1,7 @@
+<launch>
+
+    <node pkg="testkde" type="talker" name="talker" />
+    <node pkg="testkde" type="listener" name="listener"/>
+    <include file="/home/wuhang/rosproject/src/test1/launch/launchtest1.launch" />
+
+</launch>

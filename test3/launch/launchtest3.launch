@@ -1,0 +1,7 @@
+<launch>
+    <include file="/home/wuhang/catkin_ws/src/testkde/launch/launchkde.launch" />
+    <node pkg="test3" type="pytaker.py" name="talkerpy" />
+    <node pkg="test3" type="pylistener.py" name="listenerpy1"/>
+    <node pkg="test3" type="pylistener2.py" name="listenerpy2" output="screen"/>
+    
+</launch>
