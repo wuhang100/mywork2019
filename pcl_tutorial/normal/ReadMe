@@ -28,3 +28,7 @@ Cloud normals:
     -0.00545699 0.00497202 -0.999973
     -0.00545904 0.00497082 -0.999973
     -0.00545697 0.00497201 -0.999973
+
+Reference:
+Code tutorial: http://pointclouds.org/documentation/tutorials/how_features_work.php#how-3d-features-work
+Theoratical explaination: http://pointclouds.org/documentation/tutorials/normal_estimation.php#normal-estimation
