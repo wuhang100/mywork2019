@@ -1,0 +1,6 @@
+<launch>
+
+    <node pkg="pointcloud" type="pointreader" name="talker" />
+    <node pkg="pointcloud" type="pointhandle" name="listener"/>
+
+</launch>
