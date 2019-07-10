@@ -209,3 +209,6 @@ target_link_libraries(pointhandle ${catkin_LIBRARIES})
 
 add_executable(pointreader src/pointreader.cpp)
 target_link_libraries(pointreader ${catkin_LIBRARIES})
+
+add_executable(pointreceiver src/pointreceiver.cpp)
+target_link_libraries(pointreceiver ${catkin_LIBRARIES})

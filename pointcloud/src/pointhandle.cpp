@@ -1,43 +1,41 @@
 #include <ros/ros.h>
-// PCL specific includes
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
+#include <pcl/io/pcd_io.h>
+#include <tf/transform_listener.h>
 
-#include <pcl/filters/voxel_grid.h>
+pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
-//ros::Publisher pub;
-pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
+class PointCluster
+{
+public:
+    PointCluster(){
+        ROS_INFO("Handle the point cloud");
+        sub = nh.subscribe("pointcluster", 10, &PointCluster::cloud_cb, this);    
+    }
+ 
+    void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg){      
+        pcl::fromROSMsg(*cloud_msg,*cloud);
+        this-> cloudhandle (cloud);
+    }
 
-void cloudhandle (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
-  for (size_t i = 0; i < cloud->points.size (); ++i)
-    std::cout << "    " << cloud->points[i].x << " "
-                        << cloud->points[i].y << " " 
-                        << cloud->points[i].z << std::endl;
-}
-
-void cloud_cb (const sensor_msgs::PointCloud2ConstPtr& cloud_msg){
-    //If using pcl::PCLPointCloud2
-    //pcl::PCLPointCloud2 cloud2;
-    //pcl_conversions::toPCL(*cloud_msg,cloud2);
-    //pcl::fromPCLPointCloud2(cloud2,*cloud);
-    pcl::fromROSMsg(*cloud_msg,*cloud);
-    cloudhandle (cloud);
-    ROS_INFO("Handle the point cloud");
-}
-
-
-int main (int argc, char** argv){
-    // Initialize ROS
-    ros::init (argc, argv, "cloudhandle");
+    void cloudhandle (pcl::PointCloud<pcl::PointXYZ>::Ptr cloud){
+        std::cout << "I receive the cloud: "<<cloud->points.size ()<< std::endl;
+    }
+ 
+private:
+    ros::Publisher pub;
+    ros::Subscriber sub;
+    sensor_msgs::PointCloud2 cloud_send;
     ros::NodeHandle nh;
-
-    // Create a ROS subscriber for the input point cloud
-    ros::Subscriber sub = nh.subscribe ("cloudonline", 1, cloud_cb);
-
-    // Create a ROS publisher for the output point cloud
-    //pub = nh.advertise<sensor_msgs::PointCloud2> ("cloudresult", 1);
-
-    // Spin
-    ros::spin ();
+    tf::TransformListener listener;
+    //pcl::PointCloud<pcl::PointXYZ> cloud;
+};
+ 
+int main(int argc, char **argv){
+    ros::init (argc, argv, "pointhandle");
+    PointCluster pointHandle;
+    ros::spin();
+    return (0);
 }
