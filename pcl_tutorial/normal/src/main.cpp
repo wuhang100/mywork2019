@@ -26,9 +26,16 @@ int
                         << cloud->points[i].y << " " 
                         << cloud->points[i].z << std::endl;
 
+  // Create a set of indices to be used. For simplicity, we're going to be using the first 10% of the points in cloud
+  std::vector<int> indices {1,3,5,7,9};
+
   // Create the normal estimation class, and pass the input dataset to it
   pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
   ne.setInputCloud(cloud);
+
+  // Pass the indices
+  boost::shared_ptr<std::vector<int> > indicesptr (new std::vector<int> (indices));
+  ne.setIndices (indicesptr);
 
   // Create an empty kdtree representation, and pass it to the normal estimation object.
   // Its content will be filled inside the object, based on the given input dataset (as no other search surface is given).
@@ -36,14 +43,15 @@ int
   ne.setSearchMethod (tree);
 
   // Output datasets
-  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal>);
+  pcl::PointCloud<pcl::Normal>::Ptr cloud_normals (new pcl::PointCloud<pcl::Normal> ());
 
   // Use all neighbors in a sphere of radius 3cm
   ne.setRadiusSearch (2);
 
   // Compute the features
   ne.compute (*cloud_normals);
-  cloud_normals->points.size ();
+
+  // Output the normals
   std::cout << "Cloud normals: " << std::endl;
   for (size_t i = 0; i < cloud_normals->points.size (); ++i)
     std::cout << "    " << cloud_normals->points[i].normal_x << " "
