@@ -1,1 +1,4 @@
 tf_broadcaster -> pointpipe -> pointreceiver/pointhandle
+
+Why not use Ros launch instead of .sh script?
+Because I want to monitor the information of nodes via different window. 
