@@ -207,6 +207,9 @@ include_directories(
 add_executable(pointhandle src/pointhandle.cpp)
 target_link_libraries(pointhandle ${catkin_LIBRARIES})
 
+add_executable(pointhandle2 src/pointhandle2.cpp)
+target_link_libraries(pointhandle2 ${catkin_LIBRARIES})
+
 add_executable(pointreader src/pointreader.cpp)
 target_link_libraries(pointreader ${catkin_LIBRARIES})
 

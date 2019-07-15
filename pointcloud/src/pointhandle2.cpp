@@ -109,8 +109,8 @@ public:
 		             pcl::PointCloud<pcl::Normal>::Ptr pointnormal,\
 		             pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_f){
 
-	    for (std::int32_t i = 0; i < 2000; i++){
-            //if (pcl_isnan(normals->points[i].normal_x)){
+	    for (std::int32_t i = 0; i < normals->points.size (); i++){
+            if (pcl_isnan(normals->points[i].normal_x)){
     	        search_point = i;
     	        pcl::PointCloud<pcl::PointXYZ> cloud_fi;
     	        std::vector<int> search_indices;
@@ -123,21 +123,19 @@ public:
     	        extract.filter (cloud_fi);
     	        cloud_f=cloud_fi.makeShared();
     	        this-> setNormal3 (pointnum_ptr, cloud_f, pointnormal, tree);
-    	     //   normals->points[i].normal_x = pointnormal->points[0].normal_x;
-    	     //   normals->points[i].normal_y = pointnormal->points[0].normal_y;
-    	     //   normals->points[i].normal_z = pointnormal->points[0].normal_z;
-             //   }
+    	        normals->points[i].normal_x = pointnormal->points[0].normal_x;
+    	        normals->points[i].normal_y = pointnormal->points[0].normal_y;
+    	        normals->points[i].normal_z = pointnormal->points[0].normal_z;
+                }
             
-
             std::cout << " ( " << i / cloud->width + 1 << " , "<< i % cloud->width + 1 << "): "
             << " Points: (" << cloud->points[i].x << ","
 		    << cloud->points[i].y << ","
 		    << cloud->points[i].z << ")"
-		    <<"  Normals: (" << pointnormal->points[0].normal_x << ","
-		    << pointnormal->points[0].normal_y << ","
-		    << pointnormal->points[0].normal_z << ")"
+		    <<"  Normals: (" << normals->points[i].normal_x << ","
+		    << normals->points[i].normal_y << ","
+		    << normals->points[i].normal_z << ")"
             << std::endl;
-
 	    }
 
     }
@@ -147,7 +145,7 @@ public:
         cloud->width  = width;
 		cloud->height = height;
 		cloud->points.resize (cloud->width * cloud->height);
-        //this-> viewPoint(cloud, normals);
+        this-> viewPoint(cloud, normals);
 	    this-> viewnormals(cloud, normals, search_width, search_height, search_pointnum, tree, pointnormal, cloud_f);
     }
     
@@ -163,7 +161,7 @@ private:
 };
  
 int main(int argc, char **argv){
-    ros::init (argc, argv, "pointhandle");
+    ros::init (argc, argv, "pointhandle2");
     PointCluster pointHandle;
     ros::spin();
     return (0);
