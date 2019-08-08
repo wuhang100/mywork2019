@@ -3,10 +3,13 @@
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/point_cloud_color_handlers.h>
 #include <pcl/point_types.h>
-#include <pcl/search/kdtree.h>
 #include <pcl/features/normal_3d.h>
-#include <math.h>
+#include <pcl/features/fpfh.h>
+#include <pcl/search/organized.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/visualization/pcl_plotter.h>
 
+#include <math.h>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -96,8 +99,45 @@ void viewcloud (pcl::visualization::PCLVisualizer& viewer, pcl::PointCloud<pcl::
 	viewer.addCoordinateSystem();
 }
 
+void computenormals (pcl::PointCloud<pcl::PointXYZ>::Ptr & cloud, pcl::PointCloud<pcl::Normal>::Ptr & normals,\
+					 pcl::PointCloud<pcl::FPFHSignature33>::Ptr & fpfhs){
+	pcl::search::Search<PointXYZ>::Ptr tree;
+    if (cloud->isOrganized ()){
+      tree.reset (new pcl::search::OrganizedNeighbor<PointXYZ> ());
+    }
+    else{
+      tree.reset (new pcl::search::KdTree<PointXYZ> (false));
+    }
+    pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
+    ne.setInputCloud (cloud);
+    ne.setSearchMethod (tree);
+    //ne.setRadiusSearch (0.03);
+    ne.setKSearch(20);
+    ne.compute (*normals);
+    pcl::FPFHEstimation<pcl::PointXYZ, pcl::Normal, pcl::FPFHSignature33> fpfh;
+    fpfh.setInputCloud (cloud);
+    fpfh.setInputNormals (normals);
+    fpfh.setSearchMethod (tree);
+    //fpfh.setRadiusSearch (0.05);
+    fpfh.setKSearch(20);
+    fpfhs->clear();
+    fpfh.compute (*fpfhs);
+}
+
+void plotfphm (pcl::visualization::PCLPlotter & plotter, pcl::PointCloud<pcl::FPFHSignature33>::Ptr & fpfhs){
+	plotter.clearPlots();
+	plotter.addFeatureHistogram<pcl::FPFHSignature33>(*fpfhs, "fpfh",100);
+	plotter.plot();
+	plotter.close();
+	//plotter.spinOnce();
+}
+
 int main(){
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+	pcl::PointCloud<pcl::Normal>::Ptr normals (new pcl::PointCloud<pcl::Normal> ());
+	pcl::PointCloud<pcl::FPFHSignature33>::Ptr fpfhs (new pcl::PointCloud<pcl::FPFHSignature33> ());
+	pcl::visualization::PCLPlotter plotter;
+
     string file_dir;
     cout << "Enter the file directory" << endl;
     cin >> file_dir;
@@ -109,17 +149,31 @@ int main(){
 
     char axis_twist;
     float theta;
+    cout << "Enter the twist_axis and theta: ";
+    cin >> axis_twist >> theta;
+    twistcloud (cloud, axis_twist, theta);
+
+    //int t = 30;
 
     pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-
 	while (!viewer.wasStopped ()){
 	    viewcloud (viewer, cloud, "cloud");
 	    viewer.spinOnce ();
+	    computenormals (cloud, normals,fpfhs);
+	    cout << "The fpfhs for index 1 (" << cloud->points[1].x <<
+	    		" " << cloud->points[1].y << " " << cloud->points[1].z <<
+				") is: "<< fpfhs->points[1] << endl;
+	    plotfphm (plotter, fpfhs);
 
+	    /*sleep(0.1);
+	    twistcloud (cloud, 'y', theta);
+	    i++;
+	    if (i>30) {i=0;theta=-theta;};*/
 	    cout << "Enter the twist_axis and theta: ";
 	    cin >> axis_twist >> theta;
 	    twistcloud (cloud, axis_twist, theta);
 	    viewer.removePointCloud();
+
 	}
 
 }
