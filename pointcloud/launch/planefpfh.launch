@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="tfexample" type="tf_broadcaster" name="tf_broadcaster" />
+    <node pkg="pointcloud" type="plane2" name="planeadvertise"/>
+    <node pkg="rviz" type="rviz" name="rvizhome"/>
+    <node pkg="pointcloud" type="plane" name="planereceive" output="screen"/>
+
+</launch>

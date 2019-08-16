@@ -28,7 +28,7 @@ class PointCluster
 public:
     PointCluster(){
         ROS_INFO("Handle the point cloud");
-        width = 100; height = 20; search_width = 5; search_height = 5;
+        width = 100; height = 20; search_width = 15; search_height = 15;
         sub = nh.subscribe("pointcluster", 10, &PointCluster::cloud_cb, this);    
     }
  

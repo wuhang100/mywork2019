@@ -215,3 +215,19 @@ target_link_libraries(pointreader ${catkin_LIBRARIES})
 
 add_executable(pointreceiver src/pointreceiver.cpp)
 target_link_libraries(pointreceiver ${catkin_LIBRARIES})
+
+add_executable(plane
+  src/plane.cpp
+)
+add_dependencies(plane ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(plane
+  ${catkin_LIBRARIES}
+)
+
+add_executable(plane2
+  src/plane2.cpp
+)
+add_dependencies(plane2 ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(plane2
+  ${catkin_LIBRARIES}
+)
